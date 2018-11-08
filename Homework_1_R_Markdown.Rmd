@@ -1,0 +1,65 @@
+---
+title: "Thousand Year Tornado Simulation"
+author: "Melanie Fischer"
+date: "7 November 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Underlying Concept
+
+A so called thousand year event (abbreviated in the following as TYE) is by definition specified as an event whose yearly occurrence has a probability of 1/1000. Thus, in order to evaluate the probability that no TYE is taking place within a time period of 1000 years, the following calculation can be implemented:
+
+```{r Probability of no TYE occurring in 1000 years}
+# assigning the number of years in the timeseries (1000 years) to a new object
+n <- 1000  
+# yearly probability of occurence of a TYE
+1/n 
+# setting the object p as annual exceedence probability
+p <- 1/n 
+# probability of no TYE occuring in 1000 years
+(1 - p)^n  
+
+```
+
+As the probability that at least one TYE occurrs within a time period of 1000 years is the countervalue to the aforedescribed probability that no TYE is occurring, it can be hence estimated as:
+
+```{r Probability of at least one TYE occurring in 1000 years}
+1 - ((1 - p)^n)
+
+
+```
+
+## Simulating the Frequency Distribution of a Thousand Year Tornado
+In order to estimate the distribution of Thousand Year Tornado occurrences in a 1000 year period a continuous record of such events could be analysed. However, such a record does not exist and we hence have to compute a 1000 year time series. This can be implemented in R by utilising the command runif(1000), which creates a numerical vector containing 1000 uniformly distributed values.  
+
+```{r Evaluating different components of the code, results='hide'}
+randomValues <- runif(1000) # generates 1000 uniformly distributed random values
+
+eventYears <- randomValues <= 1/1000 # the threshold value of 1/1000 defines wether a TYE is occuring (<= 1/1000) or not (> 1/1000), hence the command randomValues <= 1/1000 subsets the years in which a TYE occurs (gives logical value TRUE)
+
+sum(eventYears) # gives the number of years in which an event occurrs (because in  a logical vector TRUE equals 1 and FALSE equals 0) 
+
+```
+Implementing the code above results in the number of years in which a TYE, e.g. the Thousand Year Tornado, occurrs within the timespan of 1000 years. In order to compute a distribution of TYE occurrences, this experiment has to be repeated a number of times, in this case it was computed a 1000 times. In R the function "replicate()" allows for such a simple repetition of a function (in this case the function sum(runif(1000) <= 1/1000)) for a given number of repetitions (in this case set as 1000). Aplication of the "replicate()"-function generates a numerical vector, which was assigned to the new object "observedEvents".    
+
+```{r}
+# Code used for simulating 1000 time series 
+observedEvents <- replicate(1000, sum(runif(1000)<= 1/1000), simplify="array")
+
+```
+
+
+## Histogram 
+
+This histogram illustrates the results, i.e. the distribution of TYE events, of the simulation of 1000 timeseries, each with a length of 1000 years. It was plotted by using the command hist() and the afore-created numerical vector "observedEvents" as data input.  
+
+```{r Histogram, echo=FALSE}
+hist(observedEvents, xlab = "Number of Thousand Year Tornadoes Occurring in 1000 Years", main = "Simulation of Thousand Year Tornado Occurrences", col = "darkgreen") 
+
+```
+
+
